@@ -32,5 +32,5 @@ setup(
     packages=find_packages(),
     python_requires=">=3.5",
     install_requires=["numpy"],
-    extras_require={"test": ["coverage", "pytest", "black"],},
+    extras_require={"test": ["coverage", "pytest"],},
 )
