@@ -1,0 +1,3 @@
+# archery-rounds [![Build Status](https://travis-ci.org/davidjrichardson/archery-rounds.svg?branch=master)](https://travis-ci.org/davidjrichardson/archery-rounds)
+
+archery-rounds is a Python 3 package that provides definitions for the varying scoring rounds shot in archery. The rounds in this package are mostly centred around those shot by Archery GB (GNAS), including standard World Archery (WA) rounds.
