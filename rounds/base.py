@@ -240,7 +240,7 @@ class Round(object):
         The season that this round is shot in.
     subrounds : :obj:`list` of :obj:`SubRound`
         The `SubRound`s that form up this archery round. Must contain at least 
-        `SubRound`
+        one `SubRound`
 
     Raises
     ------
@@ -340,8 +340,8 @@ class Round(object):
 
 
 def valid_subround_choices(round_class: "RoundClass", rnd: "Round") -> bool:
-    """A `RoundValidator` function that checks that each `SubRound` in the 
-    given `Round` instance is in the corresponding `RoundClass`.
+    """A function that checks that each `SubRound` in the given `Round`
+    instance is in the corresponding `RoundClass`.
 
     Notes
     -----
@@ -364,11 +364,29 @@ def valid_subround_choices(round_class: "RoundClass", rnd: "Round") -> bool:
 
 
 class RoundClass(object):
-    """A set of `Round`s that can be considered the same.
-    
+    """A class of `Round`s that can be considered the same.
+
+    `Round`s that are in the same `RoundClass` are fundamentally the same,
+    though they all differ in subtle ways that may change the handicap for a
+    score because of the changes in `TargetFace`.
+
     Attributes
     ----------
-        
+    name : str
+        The name of this `RoundClass`.
+    season : :obj:`Season`
+        The season that this `RoundClass` is shot in.
+    subrounds : :obj:`list` of :obj:`SubRound`
+        The `SubRound`s that form up this archery round. Must contain at least
+        `SubRound`.
+    validators: :obj:`list` of functions, optional
+        Extra validators that should be checked to determine membership of a
+        `Round` to this `RoundClass`.
+
+    Notes
+    -----
+        Every `RoundClass` will have the `valid_subround_choices` as one of its
+        validators.
 
     """
 
@@ -377,12 +395,12 @@ class RoundClass(object):
         name: str,
         season: Season,
         subrounds: List[List[SubRound]],
-        validators: List[RoundValidator] = [valid_subround_choices],
+        validators: List[RoundValidator] = list,
     ):
         self.name = name
         self.season = season
         self.subrounds = subrounds
-        self.validators = validators
+        self.validators = validators + [valid_subround_choices]
 
     def __str__(self) -> str:
         return f"{self.name}"
@@ -390,10 +408,13 @@ class RoundClass(object):
     def __repr__(self) -> str:
         return f"<RoundClass name: {self.name}, season: {self.season}, subrounds: {repr(self.subrounds)}>"
 
-    def validate_round(self, round: Round):
-        """
+    def validate_round(self, rnd: Round):
+        """Determines if the given `Round` is a valid member of this `RoundClass`.
 
-        :param round: Round: 
+        Parameters
+        ----------
+        rnd : :obj:`Round`
+            The `Round` that will be checked if it belongs to this `RoundClass`.
 
         """
-        return reduce(lambda x, y: x and y(self, round), self.validators, True)
+        return reduce(lambda x, y: x and y(self, rnd), self.validators, True)
